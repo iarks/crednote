@@ -12,113 +12,95 @@ import java.util.Map;
 
 public class CredNote {
 
+    public static final String TOTAL_GOODS_AMOUNT = "TOTAL_GOODS_AMOUNT_KEY";
+    public static final String CGST = "CGST_KEY";
+    public static final String SGST = "SGST_KEY";
+    public static final String ROUND_OFF = "ROUND_OFF_KEY";
+    public static final String GROSS_TOTAL = "GROSS_TOTAL_KEY";
 
+    public static final String TOTAL_TAXABLE_AMOUNT = "TOTAL_TAXABLE_AMOUNT";
+    public static final String TOTAL_CENTRAL_TAX = "TOTAL_CENTRAL_TAX";
+    public static final String TOTAL_STATE_TAX = "TOTAL_STATE_TAX";
+    public static final String TOTAL_TAX = "TOTAL_TAX";
 
     public final Organisation organisation;
     public final Organisation party;
     public final InvoiceDetail invoiceDetails;
-    private List<Good> goods;
+    private final List<Good> goods;
+    private final List<HsnDetails> hsnDetails;
+    private final HashMap<String, GoodLineItem> goodLineItems;
+    private final HashMap<String, TaxLineItem> taxLineItems;
 
-    private BigDecimal sgst;
-    private BigDecimal cgst;
+    private final String grossTotalInWords;
 
-    public HashMap<String, HsnDetails> uniqueHsnAmounts;
+    private static final Good defaultGood = new Good();
+    private static final HsnDetails defaultHsn = new HsnDetails();
 
-    public CredNote(Organisation organisation, Organisation party, InvoiceDetail invoiceDetails) {
+    public CredNote(Organisation organisation, Organisation party, InvoiceDetail invoiceDetails, String grossTotalInWords) {
         this.organisation = organisation;
         this.party = party;
         this.invoiceDetails = invoiceDetails;
         this.goods = new ArrayList<Good>();
-        this.uniqueHsnAmounts = new HashMap<>();
+        this.hsnDetails = new ArrayList<>();
+        this.goodLineItems = new HashMap<>();
+        this.taxLineItems = new HashMap<>();
+        this.grossTotalInWords = grossTotalInWords;
     }
 
-    public BigDecimal getSgst() {
-        return sgst;
-    }
-
-    public void setSgst(BigDecimal sgst) {
-        this.sgst = sgst;
-    }
-
-    public BigDecimal getCgst() {
-        return cgst;
-    }
-
-    public void setCgst(BigDecimal cgst) {
-        this.cgst = cgst;
+    public void addHsn(HsnDetails hsnDetail)
+    {
+        hsnDetails.add(hsnDetail);
     }
 
     public void addGoods(Good good)
     {
         this.goods.add(good);
-        String hsnCode = good.getHsnCode();
-        if(uniqueHsnAmounts.containsKey(hsnCode) == false)
-        {
-            uniqueHsnAmounts.put(hsnCode, new HsnDetails(hsnCode));
-        }
-    }
-
-    public Pair<Float, String> getTotal()
-    {
-        BigDecimal total = BigDecimal.ZERO;
-
-        for (Good good: goods)
-        {
-            total.add(good.getAmount());
-        }
-        return new Pair(total, CurrencyUtil.getMoneyInWords(total));
-    }
-
-    public BigDecimal getTotalCentralTaxValue()
-    {
-        BigDecimal result = BigDecimal.ZERO;
-        for(Map.Entry<String, HsnDetails> mapEntry:uniqueHsnAmounts.entrySet())
-        {
-            result.add(mapEntry.getValue().getCentralTaxAmount()).setScale(2);
-        }
-        return result;
-    }
-
-    public BigDecimal getTotalStateTaxValue()
-    {
-        BigDecimal result = BigDecimal.ZERO.setScale(2);
-        for(Map.Entry<String, HsnDetails> mapEntry:uniqueHsnAmounts.entrySet())
-        {
-            result.add(mapEntry.getValue().getStateTaxAmount());
-        }
-        return result;
-    }
-
-    public BigDecimal getTotalTaxValue()
-    {
-        BigDecimal result = BigDecimal.ZERO.setScale(2);
-        for(Map.Entry<String, HsnDetails> mapEntry:uniqueHsnAmounts.entrySet())
-        {
-            result.add(mapEntry.getValue().getTotalTaxAmount());
-        }
-        return result;
-    }
-
-    public String getOrganizationName()
-    {
-        return organisation.getName();
     }
 
     public int getNumberOfGoods(){
         return goods.size();
     }
 
-    public Good getGood(int id)
-    {
-        if(id>goods.size())
-        {
-            return null;
-        }
-
-        return goods.get(id);
+    public int getNumberOfHsn(){
+        return hsnDetails.size();
     }
 
-    public float getRoundOff() {
-        return 0.0f;
+    public Good getGood(int position)
+    {
+        if(position<0 || position>goods.size())
+        {
+            return defaultGood;
+        }
+        return goods.get(position);
+    }
+
+    public HsnDetails getHsn(int position)
+    {
+        if(position<0 || position>hsnDetails.size())
+        {
+            return defaultHsn;
+        }
+        return hsnDetails.get(position);
+    }
+
+    public void setGoodLineItem(String key, GoodLineItem item) {
+        goodLineItems.put(key, item);
+    }
+
+    public void setTaxLineItem(String key, TaxLineItem item) {
+        taxLineItems.put(key, item);
+    }
+
+    public TaxLineItem getTaxLineItem(String key) {
+        return taxLineItems.get(key);
+    }
+
+    public GoodLineItem getGoodLineItem(String key) {
+        return goodLineItems.get(key);
+    }
+
+    public String getGrossTotalInWords()
+    {
+        return grossTotalInWords;
     }
 }

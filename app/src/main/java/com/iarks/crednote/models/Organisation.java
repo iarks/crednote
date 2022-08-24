@@ -1,5 +1,8 @@
 package com.iarks.crednote.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Organisation {
     private final String name;
     private final String[] address;
@@ -33,5 +36,24 @@ public class Organisation {
 
     public int getStateCode(){
         return stateCode;
+    }
+
+    public String toJSON(){
+
+        JSONObject jsonObject= new JSONObject();
+        try {
+            jsonObject.put("name", getName());
+            jsonObject.put("address", getAddress());
+            jsonObject.put("gstin", getGSTIn());
+            jsonObject.put("state", getState());
+            jsonObject.put("stateCode", getStateCode());
+
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return "";
+        }
+
     }
 }

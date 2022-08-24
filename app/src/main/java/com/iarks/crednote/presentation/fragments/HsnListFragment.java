@@ -12,17 +12,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.iarks.crednote.R;
+import com.iarks.crednote.abstractions.HsnDetailsCarrier;
 import com.iarks.crednote.models.HsnDetails;
-import com.iarks.crednote.presentation.fragments.placeholder.PlaceholderContent;
+import com.iarks.crednote.models.TaxAmountCarrier;
 import com.iarks.crednote.service.HsnRecyclerAdapter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A fragment representing a list of Items.
  */
-public class HsnListFragment extends Fragment {
+public class HsnListFragment extends Fragment implements TaxAmountCarrier, HsnDetailsCarrier {
 
     List<HsnDetails> hsnDetails;
 
@@ -56,8 +60,6 @@ public class HsnListFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.list);
         // Set the adapter
 
-        PlaceholderContent content = new PlaceholderContent();
-
         if (recyclerView != null) {
             Context context = view.getContext();
             LinearLayoutManager lm = new LinearLayoutManager(context);
@@ -68,5 +70,58 @@ public class HsnListFragment extends Fragment {
             adapter.notifyItemRangeInserted(0, hsnDetails.size());
         }
         return view;
+    }
+
+    @Override
+    public List<HsnDetails> GetHsnDetails() {
+        return hsnDetails.stream().filter(hsnDetails -> hsnDetails.isLocked()).collect(Collectors.toList());
+    }
+
+    @Override
+    public BigDecimal getTotalTaxableAmount() {
+        BigDecimal totalTaxableAmount = BigDecimal.ZERO.setScale(2, RoundingMode.DOWN);
+        for (HsnDetails hsnDetail : hsnDetails) {
+            if (hsnDetail.isLocked())
+            {
+                totalTaxableAmount = totalTaxableAmount.add(hsnDetail.getTaxableAmount());
+            }
+        }
+        return totalTaxableAmount.setScale(2, RoundingMode.DOWN);
+    }
+
+    @Override
+    public BigDecimal getTotalCentralTaxAmount() {
+        BigDecimal totalTaxableAmount = BigDecimal.ZERO.setScale(2, RoundingMode.DOWN);
+        for (HsnDetails hsnDetail : hsnDetails) {
+            if (hsnDetail.isLocked())
+            {
+                totalTaxableAmount = totalTaxableAmount.add(hsnDetail.getCentralTaxAmount());
+            }
+        }
+        return totalTaxableAmount.setScale(2, RoundingMode.DOWN);
+    }
+
+    @Override
+    public BigDecimal getTotalStateTaxAmount() {
+        BigDecimal totalTaxableAmount = BigDecimal.ZERO.setScale(2, RoundingMode.DOWN);
+        for (HsnDetails hsnDetail : hsnDetails) {
+            if (hsnDetail.isLocked())
+            {
+                totalTaxableAmount = totalTaxableAmount.add(hsnDetail.getStateTaxAmount());
+            }
+        }
+        return totalTaxableAmount.setScale(2, RoundingMode.DOWN);
+    }
+
+    @Override
+    public BigDecimal getTotalTaxAmount() {
+        BigDecimal totalTaxableAmount = BigDecimal.ZERO.setScale(2, RoundingMode.DOWN);
+        for (HsnDetails hsnDetail : hsnDetails) {
+            if (hsnDetail.isLocked())
+            {
+                totalTaxableAmount = totalTaxableAmount.add(hsnDetail.getTotalTaxAmount());
+            }
+        }
+        return totalTaxableAmount.setScale(2, RoundingMode.DOWN);
     }
 }

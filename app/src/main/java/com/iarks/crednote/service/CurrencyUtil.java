@@ -8,23 +8,23 @@ public class CurrencyUtil {
     /* The first string is not used, it is to make
             array indexing simple */
     private static final String[] tillTen = new String[] {
-            "", "one", "two",   "three", "four",
-            "five", "six", "seven", "eight", "nine", "ten"
+            "", "One", "Two", "Three", "Four",
+            "Five", "Six", "Seven", "Eight", "Nine", "Ten"
     };
 
     /* The first string is not used, it is to make
         array indexing simple */
     private static final String[] elevenToNineteen = new String[] {
-            "",          "eleven",  "twelve",
-            "thirteen",  "fourteen", "fifteen", "sixteen",
-            "seventeen", "eighteen", "nineteen"
+            "",          "Eleven",  "Twelve",
+            "Thirteen",  "Fourteen", "Fifteen", "Sixteen",
+            "Seventeen", "Eighteen", "Nineteen"
     };
 
     /* The first two string are not used, they are to
      * make array indexing simple*/
     private static final String[] tensMultiple = new String[] {
-            "",      "",      "twenty",  "thirty", "forty",
-            "fifty", "sixty", "seventy", "eighty", "ninety"
+            "",      "",      "Twenty",  "Thirty", "Forty",
+            "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
     };
 
 
@@ -33,7 +33,6 @@ public class CurrencyUtil {
         if(BigDecimal.ZERO.equals(money))
             return "Zero";
 
-        System.out.println(String.valueOf(money));
         String moneyInString = String.valueOf(money);
         String[] decimalSplit = moneyInString.split("\\.");
         int principal = Integer.parseInt(decimalSplit[0]);

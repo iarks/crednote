@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,63 +18,58 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.iarks.crednote.Exceptions.FormNotSavedException;
 import com.iarks.crednote.R;
+import com.iarks.crednote.abstractions.OrganizationDetailsCarrier;
 import com.iarks.crednote.models.Organisation;
-import com.iarks.crednote.presentation.ui.main.NewInvoiceFragmentsAdapter;
 
-import java.time.Duration;
+public class OrganizationAndPartyFragment extends Fragment implements OrganizationDetailsCarrier {
 
-public class OrganizationAndPartyFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private boolean fragmentStateIsEditable = false;
+    private boolean isFragmentFormEditable = false;
     private TextInputEditText companyName;
     private TextInputEditText address;
     private TextInputEditText gstin;
     private TextInputEditText stateName;
     private TextInputEditText stateCode;
     private Button saveButton;
-    private Bundle savedBundle;
     private Context context;
     public final PartyType partyType;
-    private NewInvoiceFragmentsAdapter parentAdapter;
-
-    public enum Keys
-    {
-        company_name,
-        address,
-        gstin,
-        state_name,
-        state_code,
-        form_state_is_editable,
-        context
-    }
+    private static String FORM_VALUES = "FORM_VALUES";
+    private static String FORM_EDIT_STATE = "FORM_EDIT_STATE";
+    private Organisation organisation;
+    private boolean isFragmentStateSaved;
+    private final Organisation defaultOrg;
 
     public enum PartyType
     {
-        Organisation,
-        Party
+        ORGANISATION,
+        PARTY
     }
 
-    public OrganizationAndPartyFragment() {
-        partyType = PartyType.Organisation;
-    }
-
+    //region Lifecycle Events
     public OrganizationAndPartyFragment(PartyType partyType, Context context) {
         this.partyType = partyType;
         this.context = context;
+        this.defaultOrg = null;
     }
 
-    public void setContext(Context ctx)
-    {
-        context = ctx;
+    //region Lifecycle Events
+    public OrganizationAndPartyFragment(PartyType partyType, Context context, Organisation defaultOrg) {
+        this.partyType = partyType;
+        this.context = context;
+        this.defaultOrg = defaultOrg;
     }
 
-    // TODO: Rename and change types and number of parameters
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        savedBundle = savedInstanceState;
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArray(FORM_VALUES, new String[]{
+                companyName.getText().toString(),
+                address.getText().toString(),
+                gstin.getText().toString(),
+                stateName.getText().toString(),
+                stateCode.getText().toString()
+        });
+
+        outState.putBoolean(FORM_EDIT_STATE, isFragmentFormEditable);
     }
 
     @Override
@@ -85,79 +81,92 @@ public class OrganizationAndPartyFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fragmentStateIsEditable=true;
+        isFragmentFormEditable =true;
+        extractViews(view);
+        attachListeners();
+        tryRestoreFormState(savedInstanceState);
+    }
+    // endregion
+
+    //region Utility Forms
+    private void extractViews(@NonNull View view) {
         companyName = view.findViewById(R.id.companyName);
         address = view.findViewById(R.id.companyAddress);
         gstin = view.findViewById(R.id.gstinNumber);
         stateName = view.findViewById(R.id.state);
         stateCode = view.findViewById(R.id.stateCode);
         saveButton = view.findViewById(R.id.saveOrg);
+    }
 
+    private void attachListeners() {
         saveButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        try {
-                            saveButtonClick();
-                        } catch (FormNotSavedException e) {
-                            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG);
-                        }
+                view1 -> {
+                    try {
+                        onClickSaveButton();
+                    } catch (FormNotSavedException e) {
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
         );
-
-        if(savedInstanceState!=null)
-        {
-            if(savedInstanceState.containsKey(Keys.company_name.name()))
-            {
-                companyName.setText((String)savedInstanceState.get(Keys.company_name.name()));
-            }
-            if(savedInstanceState.containsKey(Keys.address.name()))
-            {
-                companyName.setText((String)savedInstanceState.get(Keys.address.name()));
-            }
-            if(savedInstanceState.containsKey(Keys.gstin.name()))
-            {
-                companyName.setText((String)savedInstanceState.get(Keys.gstin.name()));
-            }
-            if(savedInstanceState.containsKey(Keys.state_code.name()))
-            {
-                companyName.setText((String)savedInstanceState.get(Keys.state_code.name()));
-            }
-            if(savedInstanceState.containsKey(Keys.state_name.name()))
-            {
-                companyName.setText((String)savedInstanceState.get(Keys.state_name.name()));
-            }
-            if(savedInstanceState.containsKey(Keys.form_state_is_editable.name()))
-            {
-                boolean formStateIsEditable = (boolean)savedInstanceState.get(Keys.form_state_is_editable.name());
-                fragmentStateIsEditable = formStateIsEditable;
-                if(!formStateIsEditable)
-                {
-                    toggleAllFields(false, getString(R.string.label_edit));
-                }
-
-            }
-
-        }
     }
 
-    public void saveButtonClick() throws FormNotSavedException
-    {
-        if(fragmentStateIsEditable)
+    private void tryRestoreFormState(@Nullable Bundle savedInstanceState) {
+        if(savedInstanceState !=null)
         {
-            checkFields();
-            fragmentStateIsEditable = false;
-            toggleAllFields(false, getString(R.string.label_edit));
+            if(savedInstanceState.containsKey(FORM_VALUES))
+            {
+                String[] values = savedInstanceState.getStringArray(FORM_VALUES);
+                companyName.setText(values[0]);
+                address.setText(values[1]);
+                gstin.setText(values[2]);
+                stateName.setText(values[3]);
+                stateCode.setText(values[4]);
+            }
+
+            if(savedInstanceState.containsKey(FORM_EDIT_STATE))
+            {
+                isFragmentFormEditable = savedInstanceState.getBoolean(FORM_EDIT_STATE);
+                setFieldEditState();
+            }
+        }
+
+        if(savedInstanceState == null && defaultOrg!=null)
+        {
+            companyName.setText(defaultOrg.getName());
+            address.setText(defaultOrg.getAddress());
+            gstin.setText(defaultOrg.getGSTIn());
+            stateName.setText(defaultOrg.getState());
+            stateCode.setText(String.valueOf(defaultOrg.getStateCode()));
+        }
+    }
+    //endregion
+
+    public void onClickSaveButton() throws FormNotSavedException
+    {
+        if(isFragmentFormEditable)
+        {
+            checkFormFields();
+        }
+        isFragmentFormEditable = !isFragmentFormEditable;
+        setFieldEditState();
+
+        if(false == isFragmentFormEditable)
+        {
+            isFragmentStateSaved = true;
+            organisation = new Organisation(companyName.getText().toString(),
+                    address.getText().toString().split("\n"),
+                    gstin.getText().toString(),
+                    stateName.getText().toString(),
+                    Integer.parseInt(stateCode.getText().toString()));
         }
         else
         {
-            fragmentStateIsEditable = true;
-            toggleAllFields(false, getString(R.string.label_save));
+            isFragmentStateSaved = false;
+            organisation = null;
         }
     }
 
-    private void checkFields() throws FormNotSavedException {
+    private void checkFormFields() throws FormNotSavedException {
         boolean formStateIsValid = true;
         if(gstin.getText().length()==0)
         {
@@ -182,25 +191,24 @@ public class OrganizationAndPartyFragment extends Fragment {
         }
     }
 
-    private void toggleAllFields(boolean isEnabled, String buttonText) {
-        companyName.setEnabled(false);
-        address.setEnabled(false);
-        gstin.setEnabled(false);
-        stateName.setEnabled(false);
-        stateCode.setEnabled(false);
-        saveButton.setText(buttonText);
+    private void setFieldEditState() {
+        companyName.setEnabled(isFragmentFormEditable);
+        address.setEnabled(isFragmentFormEditable);
+        gstin.setEnabled(isFragmentFormEditable);
+        stateName.setEnabled(isFragmentFormEditable);
+        stateCode.setEnabled(isFragmentFormEditable);
+        if(isFragmentFormEditable)
+            saveButton.setText(R.string.label_save);
+        else
+            saveButton.setText(R.string.label_edit);
     }
 
-    public Organisation getOrgDetails() throws FormNotSavedException
+    @Override
+    public Organisation getOrganisationDetails() throws FormNotSavedException
     {
-        if(fragmentStateIsEditable)
-        {
-            throw new FormNotSavedException("Please save organization form");
-        }
-        return new Organisation(companyName.getText().toString(),
-                address.getText().toString().split("\n"),
-                gstin.getText().toString(),
-                stateName.getText().toString(),
-                Integer.parseInt(stateCode.getText().toString()));
+        if(isFragmentStateSaved)
+            return organisation;
+        String message = getString(R.string.FORM_NOT_SAVED);
+        throw new FormNotSavedException(partyType.name()+" "+message);
     }
 }

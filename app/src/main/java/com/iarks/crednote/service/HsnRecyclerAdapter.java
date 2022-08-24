@@ -33,6 +33,7 @@ public class HsnRecyclerAdapter extends RecyclerView.Adapter<HsnRecyclerAdapter.
     public HsnRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rowView = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_hsn, parent, false);
         return new HsnRecyclerAdapter.ViewHolder(rowView,
+                new HsnFormUtil.HsnCodeChangeListener(),
                 new HsnFormUtil.TaxableAmountChangeListener(),
                 new HsnFormUtil.CentralTaxRateChangeListener(),
                 new HsnFormUtil.StateTaxRateChangeListener());
@@ -65,15 +66,18 @@ public class HsnRecyclerAdapter extends RecyclerView.Adapter<HsnRecyclerAdapter.
         private HsnFormUtil.CentralTaxRateChangeListener centralTaxRateChangeListener;
         private HsnFormUtil.TaxableAmountChangeListener taxableAmountChangeListener;
         private HsnFormUtil.StateTaxRateChangeListener stateTaxRateChangeListener;
+        private HsnFormUtil.HsnCodeChangeListener hsnCodeChangeListener;
 
-        public ViewHolder(View view, HsnFormUtil.TaxableAmountChangeListener taxableAmountChangeListener, HsnFormUtil.CentralTaxRateChangeListener centralTaxRateChangeListener, HsnFormUtil.StateTaxRateChangeListener stateTaxRateChangeListener) {
+        public ViewHolder(View view, HsnFormUtil.HsnCodeChangeListener hsnCodeChangeListener, HsnFormUtil.TaxableAmountChangeListener taxableAmountChangeListener, HsnFormUtil.CentralTaxRateChangeListener centralTaxRateChangeListener, HsnFormUtil.StateTaxRateChangeListener stateTaxRateChangeListener) {
             super(view);
 
             this.centralTaxRateChangeListener = centralTaxRateChangeListener;
             this.stateTaxRateChangeListener = stateTaxRateChangeListener;
             this.taxableAmountChangeListener = taxableAmountChangeListener;
+            this.hsnCodeChangeListener = hsnCodeChangeListener;
 
             hsn = view.findViewById(R.id.hsn);
+            hsn.getEditText().addTextChangedListener(this.hsnCodeChangeListener);
             taxableAmount = view.findViewById(R.id.taxableAmount);
             taxableAmount.getEditText().addTextChangedListener(this.taxableAmountChangeListener);
             centralTaxRate = view.findViewById(R.id.centralTaxRate);
@@ -181,6 +185,7 @@ public class HsnRecyclerAdapter extends RecyclerView.Adapter<HsnRecyclerAdapter.
             centralTaxRateChangeListener.updatePosition(hsnDetail);
             stateTaxRateChangeListener.updatePosition(hsnDetail);
             taxableAmountChangeListener.updatePosition(hsnDetail);
+            hsnCodeChangeListener.updatePosition(hsnDetail);
         }
     }
 }

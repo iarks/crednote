@@ -3,7 +3,7 @@ package com.iarks.crednote.models;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class Good {
+public class Good extends GoodLine {
     public int getSerialNumber() {
         return serialNumber;
     }
@@ -164,4 +164,38 @@ public class Good {
 
     private final String[] goodData;
 
+    @Override
+    public String getPrintableDescription() {
+        return getDescriptionOfGoods();
+    }
+
+    @Override
+    public String getPrintableHsn() {
+        return getHsnCode();
+    }
+
+    @Override
+    public String getPrintableQuantity() {
+        return String.valueOf(getQuantity());
+    }
+
+    @Override
+    public String getPrintableRate() {
+        return String.valueOf(getRate());
+    }
+
+    @Override
+    public String getPrintableUnit() {
+        return getUnit();
+    }
+
+    @Override
+    public String getPrintableDiscountRate() {
+        return String.valueOf(getDiscount());
+    }
+
+    @Override
+    public String getPrintableAmount() {
+        return String.valueOf(getAmount());
+    }
 }

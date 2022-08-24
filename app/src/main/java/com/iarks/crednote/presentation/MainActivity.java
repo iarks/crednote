@@ -1,6 +1,7 @@
 package com.iarks.crednote.presentation;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.pdf.PdfDocument;
 import android.os.Build;
@@ -62,58 +63,24 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                openNewInvoiceActivity();
             }
         });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             verifyStoragePermissions();
         }
+    }
 
-        try
-        {
-            CredNote credNote = new CredNote(new Organisation("B.K.Traders",
-                    new String[]{"13", "Pageya Patti Street", "Kolkata - 700045"}, "18AABCU9603R1ZM",
-                    "Madhya Pradesh", 999999999),
-                    new Organisation("B.K.Traders",
-                            new String[]{"13", "Pageya Patti Street", "Kolkata - 700045"}, "18AABCU9603R1ZM",
-                            "Madhya Pradesh", 999999999), new InvoiceDetail());
-            credNote.addGoods(new Good(1, "String description", 23, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
-            credNote.addGoods(new Good(1, "String description", 23, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
-            credNote.addGoods(new Good(1, "String description", 23, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
-            credNote.addGoods(new Good(1, "String description", 23, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
-            credNote.addGoods(new Good(1, "String description", 63, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
-            credNote.setSgst(BigDecimal.valueOf(23).setScale(2));
-            credNote.setCgst(BigDecimal.valueOf(25).setScale(2));
-            PdfDocument document = new SimpleCredNoteRenderer().generateCredNote(credNote);
+    private void openNewInvoiceActivity() {
+        Intent intent = new Intent(this, NewInvoiceActivity.class);
+        startActivity(intent);
+    }
 
-            File file = new File(Environment.getExternalStorageDirectory(), "GFG.pdf");
-
-            try {
-                // after creating a file name we will
-                // write our PDF file to that location.
-                document.writeTo(new FileOutputStream(file));
-
-                // below line is to print toast message
-                // on completion of PDF generation.
-                Toast.makeText(MainActivity.this, "PDF file generated successfully.", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                // below line is used
-                // to handle error
-                e.printStackTrace();
-            }
-            // after storing our pdf to that
-            // location we are closing our PDF file.
-            document.close();
-
-
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-
+    private void openSettingsActivity()
+    {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -169,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            openSettingsActivity();
             return true;
         }
 

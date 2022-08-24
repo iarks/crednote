@@ -2,28 +2,30 @@ package com.iarks.crednote.presentation.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.iarks.crednote.R;
+import com.iarks.crednote.abstractions.GoodsListCarrier;
 import com.iarks.crednote.models.Good;
-import com.iarks.crednote.presentation.fragments.placeholder.PlaceholderContent;
+import com.iarks.crednote.models.GoodsAmountCarrier;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A fragment representing a list of Items.
  */
-public class GoodsListFragment extends Fragment {
+public class GoodsListFragment extends Fragment implements GoodsAmountCarrier, GoodsListCarrier {
 
     List<Good> TempGoods;
 
@@ -55,8 +57,6 @@ public class GoodsListFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.list);
         // Set the adapter
 
-        PlaceholderContent content = new PlaceholderContent();
-
         if (recyclerView != null) {
             Context context = view.getContext();
             LinearLayoutManager lm = new LinearLayoutManager(context);
@@ -67,5 +67,22 @@ public class GoodsListFragment extends Fragment {
             adapter.notifyItemRangeInserted(0, TempGoods.size());
         }
         return view;
+    }
+
+    @Override
+    public List<Good> getGoodDetails() {
+        return TempGoods.stream().filter(good -> good.isLocked() == true).collect(Collectors.toList());
+    }
+
+    @Override
+    public BigDecimal getGoodsTotal() {
+        BigDecimal totalTaxableAmount = BigDecimal.ZERO.setScale(2, RoundingMode.DOWN);
+        for (Good good : TempGoods) {
+            if (good.isLocked())
+            {
+                totalTaxableAmount = totalTaxableAmount.add(good.getAmount());
+            }
+        }
+        return totalTaxableAmount.setScale(2, RoundingMode.DOWN);
     }
 }

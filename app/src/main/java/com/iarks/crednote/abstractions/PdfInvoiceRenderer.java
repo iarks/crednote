@@ -1,5 +1,6 @@
 package com.iarks.crednote.abstractions;
 
+import android.graphics.Canvas;
 import android.graphics.pdf.PdfDocument;
 
 import com.iarks.crednote.models.CredNote;

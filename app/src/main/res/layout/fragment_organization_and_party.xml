@@ -1,71 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:orientation="vertical"
+    android:padding="8dp"
     tools:context=".presentation.fragments.OrganizationAndPartyFragment">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/company_name_container"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/label_company_name">
-    <com.google.android.material.textfield.TextInputEditText
-        android:textSize="16sp"
-        android:id="@+id/companyName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"/>
-    </com.google.android.material.textfield.TextInputLayout>
+        android:layout_height="wrap_content">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:id="@+id/companyAddress"
-        android:layout_width="match_parent"
-        android:layout_height="48sp"
-        android:minLines="1"
-        android:lines="3"
-        android:maxLines="3"
-        android:hint="@string/label_company_address"
-        android:layout_below="@id/company_name_container"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/company_name_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/label_company_name"
+                android:padding="8dp">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:id="@+id/gstinNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/label_gstinNumber"
-        android:layout_below="@id/companyAddress"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/companyName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:id="@+id/state"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/label_state"
-        android:layout_below="@id/gstinNumber"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/label_company_address"
+                android:padding="8dp">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:padding="16dp"
-        android:textSize="16sp"
-        android:id="@+id/stateCode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:hint="@string/label_stateCode"
-        android:layout_below="@id/state"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/companyAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine|textCapWords"
+                    android:lines="3"
+                    android:maxLines="3"
+                    android:minLines="3"
+                    android:scrollbars="vertical"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:layout_below="@id/stateCode"
-        android:layout_alignParentRight="true"
-        android:id="@+id/saveOrg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_save"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
 
-</RelativeLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/gstinNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/companyAddress"
+                    android:inputType="textCapCharacters"
+                    android:hint="@string/label_gstinNumber" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/gstinNumber"
+                    android:inputType="textCapWords"
+                    android:hint="@string/label_state" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/stateCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/state"
+                    android:hint="@string/label_stateCode"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/saveOrg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/label_save" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

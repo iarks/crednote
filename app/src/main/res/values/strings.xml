@@ -8,7 +8,7 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="general_instruction">Click the floating action button to create a credit note</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_new_invoice">NewInvoiceActivity</string>
     <string name="tab_text_1">Tab 1</string>
@@ -42,10 +42,11 @@
     <string name="label_invoiceDetails">Invoice Details</string>
     <string name="label_description_of_goods">Description of Goods</string>
     <string name="label_hsn">HSN Code</string>
+    <string name="label_hsn_short">HSN</string>
     <string name="label_quantity">Quantity</string>
     <string name="label_rate">rate</string>
     <string name="label_per">per</string>
-    <string name="label_disc">Discount</string>
+    <string name="label_disc">Discount %</string>
     <string name="label_amount">Amount</string>
     <string name="label_remove">Remove</string>
     <string name="label_add">Add</string>
@@ -57,14 +58,58 @@
     <string name="label_tax_amount">Total Tax Amount</string>
     <string name="GoodsDetails">Goods Details</string>
     <string name="hsnDetails">HSN Details</string>
-    <string name="label_cgst_amount">CGST</string>
-    <string name="label_sgst_amount">SGST</string>
-    <string name="label_roundOff">Round Off</string>
-    <string name="label_total">Total</string>
-    <string name="label_total_taxable_amount">Total Taxable Amount</string>
-    <string name="label_total_central_tax_amount">Total Central Tax Amount</string>
-    <string name="label_total_state_tax_amount">Total Sales Tax Amount</string>
+    <string name="label_cgst_amount">CGST \u20B9</string>
+    <string name="label_sgst_amount">SGST \u20B9</string>
+    <string name="label_roundOff">Round Off \u20B9</string>
+    <string name="label_total">Total \u20B9</string>
+    <string name="label_total_taxable_amount">Total Taxable Amount \u20B9</string>
+    <string name="label_total_central_tax_amount">Total Central Tax Amount \u20B9</string>
+    <string name="label_total_state_tax_amount">Total Sales Tax Amount \u20B9</string>
     <string name="label_total_tax_amount">Total Tax Amount</string>
     <string name="taxTotals">Tax Totals</string>
     <string name="label_recalculate">Evaluate</string>
+    <string name="FORM_NOT_SAVED">form not saved</string>
+    <string name="BACK_CONFIRM">Do you want to exit?\n\nAll your changes will be discarded</string>
+    <string name="YES">Yes</string>
+    <string name="NO">No</string>
+    <string name="CGST">CGST</string>
+    <string name="label_recalculate_this">Evaluate Present Values</string>
+    <string name="label_recalculate_locked">Evaluate From Locked Forms</string>
+    <string name="label_goods_amount">Total Goods Amount \u20B9</string>
+    <string name="label_get_goods_total">Get Goods Amount Total</string>
+    <string name="label_get_values">Get Values</string>
+    <string name="label_total_InWords">Total Amount In Words</string>
+    <string name="preview">Preview</string>
+    <string name="HSN_SAC">HSN/ SAC</string>
+    <string name="central_tax">Central Tax</string>
+    <string name="state_tax">State Tax</string>
+    <string name="Rate">Rate</string>
+    <string name="serial_number">Sl. No.</string>
+    <string name="unit">per</string>
+    <string name="CREDIT_NOTE">Credit Note</string>
+    <string name="label_disc_short">Disc %</string>
+    <string name="rupee_symbol">₹</string>
+    <string name="AMOUNT_CHARGEABLE_IN_WORDS">Amount chargeable in words:</string>
+    <string name="DECLERATION">Declaration:\nWe declare that this invoice shows the actual price of the goods described and that all particulars are true and correct</string>
+    <string name="FOR">For</string>
+    <string name="Authorised_Signatory">Authorised Signatory</string>
+    <string name="terms_Of_Delivery">Terms of Delivery:</string>
+    <string name="GSTIN">GSTIN</string>
+    <string name="state_code">State Code</string>
+    <string name="this_is_a_computer_generated_invoice">This is a computer generated invoice</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="settings_organization_header">Organization Details</string>
+    <string name="settings_document_header">Document</string>
+
+    <!-- Messages Preferences -->
+    <string name="organization_name">Name Of Your Organization</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="print_hsn_fill">Include HSN details in document</string>
+    <string name="hsn_fill_setting_summary">Turn on to include individual HSN details as part of the credit note</string>
+    <string name="autofill_company">Autofill Company Details</string>
+    <string name="autofill_company_setting_summary">Turn on to autofill company details from preference</string>
 </resources>

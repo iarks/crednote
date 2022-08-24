@@ -1,24 +1,32 @@
 package com.iarks.crednote.presentation.fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.textfield.TextInputLayout;
+import com.iarks.crednote.Exceptions.FormNotSavedException;
 import com.iarks.crednote.R;
+import com.iarks.crednote.abstractions.TaxDetailsCarrier;
+import com.iarks.crednote.models.GoodLineItem;
+import com.iarks.crednote.models.GoodsAmountCarrier;
+import com.iarks.crednote.models.TaxAmountCarrier;
+import com.iarks.crednote.models.TaxDetails;
+import com.iarks.crednote.models.TaxLine;
+import com.iarks.crednote.models.TaxLineItem;
+import com.iarks.crednote.service.CurrencyUtil;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class TaxFragment extends Fragment {
+public class TaxFragment extends Fragment implements TaxDetailsCarrier {
 
+    private TextInputLayout goodsTotal;
     private TextInputLayout cgst;
     private TextInputLayout sgst;
     private TextInputLayout roundOff;
@@ -27,38 +35,41 @@ public class TaxFragment extends Fragment {
     private TextInputLayout totalCentralTax;
     private TextInputLayout totalStateTax;
     private TextInputLayout totalTax;
+    private TextInputLayout totalInWords;
     private Button save;
     private Button evalTop;
-    private Button evalBottom;
+    private Button goodTotalsButton;
+    private Button getHsnValues;
 
-    private boolean isFormEditable = true;
+    private TaxDetails taxDetails;
+
+    private boolean isFragmentFormEditable = true;
+
+    private TaxAmountCarrier taxAmountCarrier;
+    private GoodsAmountCarrier goodsAmountCarrier;
+
+    public TaxFragment(TaxAmountCarrier taxAmountCarrier, GoodsAmountCarrier goodsAmountCarrier) {
+        this.taxAmountCarrier = taxAmountCarrier;
+        this.goodsAmountCarrier = goodsAmountCarrier;
+    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArray("fieldValues", new String[] {
+                goodsTotal.getEditText().getText().toString(),
                 cgst.getEditText().getText().toString(),
                 sgst.getEditText().getText().toString(),
                 roundOff.getEditText().getText().toString(),
                 total.getEditText().getText().toString(),
+                totalInWords.getEditText().getText().toString(),
                 taxableAmount.getEditText().getText().toString(),
                 totalCentralTax.getEditText().getText().toString(),
                 totalStateTax.getEditText().getText().toString(),
                 totalTax.getEditText().getText().toString()
         });
-        outState.putBoolean("isFormEditable", isFormEditable);
-
-        System.out.println("on save instance state called");
+        outState.putBoolean("isFormEditable", isFragmentFormEditable);
     }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-        System.out.println("on create called");
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -75,30 +86,74 @@ public class TaxFragment extends Fragment {
         totalTax = v.findViewById(R.id.totalTaxAmount);
         save = v.findViewById(R.id.saveOrg);
         evalTop = v.findViewById(R.id.evaluateTaxTop);
-        evalBottom = v.findViewById(R.id.evaluateTaxBottom);
+        goodTotalsButton = v.findViewById(R.id.getGoodsTotals);
+        getHsnValues = v.findViewById(R.id.getHsnValues);
+        totalInWords = v.findViewById(R.id.totalInWords);
+        goodsTotal = v.findViewById(R.id.totalGoods);
 
         save.setOnClickListener(view -> {
-            isFormEditable=!isFormEditable;
-            ToggleForm(isFormEditable);
+            isFragmentFormEditable =!isFragmentFormEditable;
+            ToggleForm(isFragmentFormEditable);
+            if(isFragmentFormEditable == false)
+            {
+                BigDecimal goodsTotalAmt = goodsTotal.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(goodsTotal.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+                BigDecimal cgstAmt = cgst.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(cgst.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+                BigDecimal sgstAmt = sgst.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(sgst.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+                BigDecimal roundOffAmt = roundOff.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(roundOff.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+                BigDecimal totalAmt = total.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(total.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+                String totalWords = totalInWords.getEditText().getText().toString();
+
+                BigDecimal taxableAmt = taxableAmount.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(taxableAmount.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+                BigDecimal centralTaxAmt = totalCentralTax.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(totalCentralTax.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+                BigDecimal totalStateTaxAmount = totalStateTax.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(totalStateTax.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+                BigDecimal totalTaxAmount = totalTax.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(totalTax.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+
+                taxDetails = new TaxDetails(goodsTotalAmt, cgstAmt, sgstAmt, roundOffAmt, totalAmt, taxableAmt, centralTaxAmt, totalStateTaxAmount, totalTaxAmount);
+                taxDetails.setTotalInWords(totalWords);
+            }
+            else
+            {
+                taxDetails = null;
+            }
         });
 
         evalTop.setOnClickListener(view -> {
-            BigDecimal cgstValue = cgst.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(cgst.getEditText().getText().toString());
-            BigDecimal sgstValue = sgst.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(sgst.getEditText().getText().toString());
-            BigDecimal roundOffValue = roundOff.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(roundOff.getEditText().getText().toString());
+            BigDecimal goodsAmount = goodsTotal.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(goodsTotal.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+            BigDecimal cgstValue = cgst.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(cgst.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+            BigDecimal sgstValue = sgst.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(sgst.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
+            BigDecimal roundOffValue = roundOff.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(roundOff.getEditText().getText().toString()).setScale(2, RoundingMode.DOWN);
 
-            BigDecimal eval = cgstValue.add(sgstValue).setScale(2, RoundingMode.DOWN).add(roundOffValue).setScale(2, RoundingMode.DOWN);
+            BigDecimal eval = goodsAmount.add(cgstValue).add(sgstValue).add(roundOffValue).setScale(2, RoundingMode.DOWN);
             total.getEditText().setText(String.valueOf(eval));
+            totalInWords.getEditText().setText(CurrencyUtil.getMoneyInWords(eval));
         });
 
-        evalBottom.setOnClickListener(view -> {
-            BigDecimal taxableAmountVal = taxableAmount.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(taxableAmount.getEditText().getText().toString());
-            BigDecimal totalCentralTaxVal = totalCentralTax.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(totalCentralTax.getEditText().getText().toString());
-            BigDecimal totalStateTaxVal = totalStateTax.getEditText().getText().toString().trim().equals("") ? new BigDecimal("0.00") : new BigDecimal(totalStateTax.getEditText().getText().toString());
+        goodTotalsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BigDecimal goodsAmount = goodsAmountCarrier.getGoodsTotal();
 
-            BigDecimal eval = taxableAmountVal.add(totalCentralTaxVal).setScale(2, RoundingMode.DOWN).add(totalStateTaxVal).setScale(2, RoundingMode.DOWN);
-            totalTax.getEditText().setText(String.valueOf(eval));
+                goodsTotal.getEditText().setText(String.valueOf(goodsAmount));
+            }
         });
+
+        getHsnValues.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BigDecimal taxableAmountVal = taxAmountCarrier.getTotalTaxableAmount();
+                BigDecimal totalCentralTaxVal = taxAmountCarrier.getTotalCentralTaxAmount();
+                BigDecimal totalStateTaxVal = taxAmountCarrier.getTotalStateTaxAmount();
+                BigDecimal totalTaxVal = taxAmountCarrier.getTotalTaxAmount();
+
+                taxableAmount.getEditText().setText(String.valueOf(taxableAmountVal));
+                totalCentralTax.getEditText().setText(String.valueOf(totalCentralTaxVal));
+                totalStateTax.getEditText().setText(String.valueOf(totalStateTaxVal));
+                totalTax.getEditText().setText(String.valueOf(totalTaxVal));
+
+            }
+        });
+
+
 
         if(savedInstanceState==null)
             return v;
@@ -106,20 +161,22 @@ public class TaxFragment extends Fragment {
         if(savedInstanceState.containsKey("fieldValues"))
         {
             String[] savedInstance = savedInstanceState.getStringArray("fieldValues");
-            cgst.getEditText().setText(savedInstance[0]);
-            sgst.getEditText().setText(savedInstance[1]);
-            roundOff.getEditText().setText(savedInstance[2]);
-            total.getEditText().setText(savedInstance[3]);
-            taxableAmount.getEditText().setText(savedInstance[4]);
-            totalCentralTax.getEditText().setText(savedInstance[5]);
-            totalStateTax.getEditText().setText(savedInstance[6]);
-            totalTax.getEditText().setText(savedInstance[7]);
+            goodsTotal.getEditText().setText(savedInstance[0]);
+            cgst.getEditText().setText(savedInstance[1]);
+            sgst.getEditText().setText(savedInstance[2]);
+            roundOff.getEditText().setText(savedInstance[3]);
+            total.getEditText().setText(savedInstance[4]);
+            totalInWords.getEditText().setText(savedInstance[5]);
+            taxableAmount.getEditText().setText(savedInstance[6]);
+            totalCentralTax.getEditText().setText(savedInstance[7]);
+            totalStateTax.getEditText().setText(savedInstance[8]);
+            totalTax.getEditText().setText(savedInstance[9]);
         }
 
         if(savedInstanceState.containsKey("isFormEditable"))
         {
-            isFormEditable = savedInstanceState.getBoolean("isFormEditable");
-            ToggleForm(isFormEditable);
+            isFragmentFormEditable = savedInstanceState.getBoolean("isFormEditable");
+            ToggleForm(isFragmentFormEditable);
         }
 
         return v;
@@ -134,12 +191,23 @@ public class TaxFragment extends Fragment {
         totalCentralTax.setEnabled(isFormEditable);
         totalStateTax.setEnabled(isFormEditable);
         totalTax.setEnabled(isFormEditable);
-        evalBottom.setEnabled(isFormEditable);
+        totalInWords.setEnabled(isFormEditable);
+        goodTotalsButton.setEnabled(isFormEditable);
+        getHsnValues.setEnabled(isFormEditable);
         evalTop.setEnabled(isFormEditable);
         if(isFormEditable)
             save.setText(R.string.label_save);
         else
             save.setText(R.string.label_edit);
+    }
+
+    @Override
+    public TaxDetails getTaxDetails() throws FormNotSavedException
+    {
+        if(taxDetails == null)
+            throw new FormNotSavedException("Tax Details "+getString(R.string.FORM_NOT_SAVED));
+
+        return taxDetails;
     }
 
 

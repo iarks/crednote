@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".presentation.fragments.TaxFragment">
 
     <ScrollView
@@ -29,6 +29,27 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/totalGoods"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_goods_amount"
+                        android:padding="8dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/getGoodsTotals"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:text="@string/label_get_goods_total" />
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/cgst"
                         android:layout_width="match_parent"
@@ -38,7 +59,8 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,7 +73,8 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,7 +87,8 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal|numberSigned"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -77,16 +101,31 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="numberSigned|numberDecimal"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/totalInWords"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_total_InWords"
+                        android:padding="8dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapSentences"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
+                        android:id="@+id/evaluateTaxTop"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/evaluateTaxTop"
                         android:layout_margin="8dp"
-                        android:text="@string/label_recalculate"/>
+                        android:text="@string/label_recalculate" />
 
                 </LinearLayout>
 
@@ -112,7 +151,8 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -125,7 +165,8 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,7 +179,8 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -151,16 +193,25 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"/>
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
+                        android:id="@+id/getHsnValues"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/evaluateTaxBottom"
                         android:layout_margin="8dp"
-                        android:text="@string/label_recalculate"/>
+                        android:text="@string/label_get_values" />
+
+                    <Button
+                        android:id="@+id/evaluateTaxBottomCurrent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:visibility="gone"
+                        android:text="@string/label_recalculate_this" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
