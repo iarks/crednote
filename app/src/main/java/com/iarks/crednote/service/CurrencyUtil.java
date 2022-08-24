@@ -1,5 +1,7 @@
 package com.iarks.crednote.service;
 
+import java.math.BigDecimal;
+
 public class CurrencyUtil {
 
 
@@ -26,8 +28,12 @@ public class CurrencyUtil {
     };
 
 
-    public static String getMoneyInWords(double money)
+    public static String getMoneyInWords(BigDecimal money)
     {
+        if(BigDecimal.ZERO.equals(money))
+            return "Zero";
+
+        System.out.println(String.valueOf(money));
         String moneyInString = String.valueOf(money);
         String[] decimalSplit = moneyInString.split("\\.");
         int principal = Integer.parseInt(decimalSplit[0]);
@@ -65,6 +71,9 @@ public class CurrencyUtil {
 
     private static String getDoubleDigitNumberInWords(int num)
     {
+        num = Math.abs(num);
+
+        System.out.println("tryin to eval" + num);
         if(num<=10)
             return tillTen[num];
 

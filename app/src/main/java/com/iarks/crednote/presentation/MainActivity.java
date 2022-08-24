@@ -1,47 +1,38 @@
 package com.iarks.crednote.presentation;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.pdf.PdfDocument;
-import android.graphics.pdf.PdfDocument.PageInfo;
+import android.os.Build;
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Environment;
-import android.print.PrintAttributes;
-import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.iarks.crednote.R;
 import com.iarks.crednote.databinding.ActivityMainBinding;
 import com.iarks.crednote.models.CredNote;
+import com.iarks.crednote.models.Good;
 import com.iarks.crednote.models.InvoiceDetail;
 import com.iarks.crednote.models.Organisation;
 import com.iarks.crednote.service.SimpleCredNoteRenderer;
-import com.iarks.crednote.views.CreditNote;
-
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -76,16 +67,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        verifyStoragePermissions();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            verifyStoragePermissions();
+        }
 
-        try {
-
+        try
+        {
             CredNote credNote = new CredNote(new Organisation("B.K.Traders",
                     new String[]{"13", "Pageya Patti Street", "Kolkata - 700045"}, "18AABCU9603R1ZM",
                     "Madhya Pradesh", 999999999),
                     new Organisation("B.K.Traders",
                             new String[]{"13", "Pageya Patti Street", "Kolkata - 700045"}, "18AABCU9603R1ZM",
                             "Madhya Pradesh", 999999999), new InvoiceDetail());
+            credNote.addGoods(new Good(1, "String description", 23, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
+            credNote.addGoods(new Good(1, "String description", 23, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
+            credNote.addGoods(new Good(1, "String description", 23, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
+            credNote.addGoods(new Good(1, "String description", 23, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
+            credNote.addGoods(new Good(1, "String description", 63, new BigDecimal("234"), "unit", BigDecimal.valueOf(23), BigDecimal.valueOf(2)));
+            credNote.setSgst(BigDecimal.valueOf(23).setScale(2));
+            credNote.setCgst(BigDecimal.valueOf(25).setScale(2));
             PdfDocument document = new SimpleCredNoteRenderer().generateCredNote(credNote);
 
             File file = new File(Environment.getExternalStorageDirectory(), "GFG.pdf");
@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     public void verifyStoragePermissions() {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
